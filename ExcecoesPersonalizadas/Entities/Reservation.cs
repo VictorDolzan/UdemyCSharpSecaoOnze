@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using CSharpSecaoOnze.ExcecoesPersonalizadas.Entities.Exceptions;
 
 namespace CSharpSecaoOnze.ExcecoesPersonalizadas.Entities
 {
@@ -18,6 +19,10 @@ namespace CSharpSecaoOnze.ExcecoesPersonalizadas.Entities
         }
         public Reservation(int externalRoomNumber, DateTime externalCheckIn, DateTime externalCheckOut)
         {
+            if (externalCheckOut <= externalCheckIn)
+            {
+                throw new DomainException("Check-out must be after check-in");
+            }
             RoomNumber = externalRoomNumber;
             CheckIn = externalCheckIn;
             CheckOut = externalCheckOut;
@@ -29,13 +34,22 @@ namespace CSharpSecaoOnze.ExcecoesPersonalizadas.Entities
         }
         public void UpdateDates(DateTime externalCheckIn, DateTime externalCheckOut)
         {
+            DateTime now = DateTime.Now;
+            if (externalCheckIn < now || externalCheckOut < now)
+            {
+                throw new DomainException("Reservation dates for updates must be future dates!");
+            }
+            if (externalCheckOut <= externalCheckIn)
+            {
+                throw new DomainException("Check-out must be after check-in");
+            }
             CheckIn = externalCheckIn;
             CheckOut = externalCheckOut;
         }
 
         public override string ToString()
         {
-            return "Room"
+            return "Room "
             + RoomNumber
             + ", check-in: "
             + CheckIn.ToString("MM/dd/yyyy")
